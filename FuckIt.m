@@ -3,7 +3,7 @@ PATH_EEGLAB = 'G:\MDO\eeglab9_0_8_6b';
 PATH_RESULTS = 'G:\MDO\Results\';
 
 
-
+% Dit is ook een test
 % Fuck It!
 
 clear all
