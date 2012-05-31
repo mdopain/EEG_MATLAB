@@ -16,5 +16,3 @@ numbers = [1:64 1:64];
 
 mapToNum = containers.Map(names,numbers);
 num = mapToNum(electrode);
-
-% disp(['You put in '  ,electrode, '. This resolves to ',num2str(num),'.'])
