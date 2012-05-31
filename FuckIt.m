@@ -4,7 +4,7 @@ PATH_RESULTS = 'G:\MDO\Results\';
 
 
 
-% Fuck It!
+% Fuck That!
 
 clear all
 close all
