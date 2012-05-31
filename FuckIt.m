@@ -3,7 +3,7 @@ PATH_EEGLAB = 'G:\MDO\eeglab9_0_8_6b';
 PATH_RESULTS = 'G:\MDO\Results\';
 
 
-% Fuck Yeah!
+% Fuck je moeder!
 clear all
 close all
 clc
