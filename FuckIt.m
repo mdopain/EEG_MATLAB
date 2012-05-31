@@ -4,7 +4,7 @@ PATH_RESULTS = 'G:\MDO\Results\';
 
 
 % Dit is ook een test
-% Fuck It!
+% Fuck you! so long gay boys
 
 clear all
 close all
