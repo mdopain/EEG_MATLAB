@@ -3,7 +3,7 @@ PATH_EEGLAB = 'G:\MDO\eeglab9_0_8_6b';
 PATH_RESULTS = 'G:\MDO\Results\';
 
 
-% Fuck That!
+% Fuck you guys, i'm going home. so long gay boys. nothing to see here.
 
 
 clear all
