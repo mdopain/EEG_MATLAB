@@ -1,17 +1,20 @@
 %   makeMontage
-%       Expects input from read_eep_cnt() requires electrodeLookup.m
+%
+%       Function to calculate a new montage from an eeg signal.
+%
+%       Expects input from read_eep_cnt(), requires electrodeLookup.m
 %
 %   Written by Daniël Groothuysen 2012
 %       
 %       Inputs are the raw EEG, a string array 'electrodeNames' which
 %       contains the electrodes you want to make a montage to, and a
-%       variable 'all' to give the option to make a montage to the average
+%       boolean 'all' to give the option to make a montage to the average
 %       of all electrodes.
 %
 %       Output is the newly calculated montage.
 
 
-function [EEGmontage] = makeMontage(eeg,electrodeNames,all)
+function [EEGmontage] = makeMontage( eeg, electrodeNames, all )
 n=length(electrodeNames);
 electrodeNumbers = zeroes(n);
 montageValue=0;
