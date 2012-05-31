@@ -4,7 +4,7 @@ PATH_RESULTS = 'G:\MDO\Results\';
 
 
 % Fuck That!
-
+% test van de automatische add van git
 
 clear all
 close all
