@@ -2,9 +2,8 @@ PATH_DATA = 'C:\Users\Jeffrey Benistant\Desktop\Mathlab';
 PATH_EEGLAB = 'G:\MDO\eeglab9_0_8_6b';
 PATH_RESULTS = 'G:\MDO\Results\';
 
-%Another test of committing
 
-% Hell Yeah!
+% Fuck Yeah!
 clear all
 close all
 clc
@@ -56,7 +55,12 @@ clc
     eeg = downsample( eeg', 5 )';
 
 % Montage M1M2
-    eeg = makeMontage(eeg);
+    eeg = makeMontage( eeg, ['Fz']);
+%% Filtering :D
+% - Put the signal on zero around the Trigger event.
+% - Apply a Highpass filter
+% - Apply a Lowpass filter
+% - Apply a Stopband filter
 
 % replace EEG artifacts
 nr_trig=size(trig38,1);
