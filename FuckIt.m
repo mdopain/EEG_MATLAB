@@ -3,12 +3,13 @@ PATH_EEGLAB = 'G:\MDO\eeglab9_0_8_6b';
 PATH_RESULTS = 'G:\MDO\Results\';
 
 
-
 % Fuck That!
+
 
 clear all
 close all
 clc
+% hello world
 
 % Start the Tic Timer.
     tic
