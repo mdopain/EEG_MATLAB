@@ -3,8 +3,13 @@ PATH_EEGLAB = 'G:\MDO\eeglab9_0_8_6b';
 PATH_RESULTS = 'G:\MDO\Results\';
 
 
+<<<<<<< HEAD
 % Fuck you guys, i'm going home. so long gay boys. nothing to see here.
 
+=======
+% Fuck That!
+% test van de automatische add van git
+>>>>>>> cbc7dca9b123372d1e11f67c4603083d4dfb0a97
 
 clear all
 close all
