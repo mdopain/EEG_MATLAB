@@ -2,10 +2,7 @@ PATH_DATA = 'C:\Users\Jeffrey Benistant\Desktop\Mathlab';
 PATH_EEGLAB = 'G:\MDO\eeglab9_0_8_6b';
 PATH_RESULTS = 'G:\MDO\Results\';
 
-
-
 % Fuck It!
-
 clear all
 close all
 clc
