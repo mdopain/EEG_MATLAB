@@ -1,15 +1,11 @@
+% Declaring path variables
 PATH_DATA = 'C:\Users\Jeffrey Benistant\Desktop\Mathlab';
 PATH_EEGLAB = 'G:\MDO\eeglab9_0_8_6b';
 PATH_RESULTS = 'G:\MDO\Results\';
 
-
-% Fuck That!
-% test van de automatische add van git
-
 clear all
 close all
 clc
-% hello world
 
 % Start the Tic Timer.
     tic
