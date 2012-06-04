@@ -1,2 +1,2 @@
 git pull origin master
-git log --pretty=oneline -15
+git log --pretty=format:"%an	%ar	%s" -15
