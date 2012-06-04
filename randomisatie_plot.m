@@ -8,7 +8,6 @@ r = [3,2,4,1,6,5];
 
 t=1:6;
 %% Plot
-
 hold on
 scatter(t,d,'b');
 scatter(t,r,'g');
