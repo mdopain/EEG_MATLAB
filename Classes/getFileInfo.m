@@ -29,8 +29,8 @@ switch trigNr
     case 110
         name='Niek Prins';
     case 111
-        name='???';
-end
+        name='Juriaan Brandts';
+% Is dit trouwens de naam en casenr van die dude?
 
 switch dag
     case 1
@@ -49,5 +49,7 @@ end
 
 fExist = exist( cntfile, 'file' );
 if fExist(1) == 0
+
     disp(['getFileInfo: CNT-File does not exist:' cntfile]);
 end
+
