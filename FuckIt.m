@@ -1,20 +1,21 @@
-% Declaring path variables
-PATH_DATA = 'C:\Users\Jeffrey Benistant\Desktop\Mathlab';
-PATH_EEGLAB = 'G:\MDO\eeglab9_0_8_6b';
-PATH_RESULTS = 'G:\MDO\Results\';
-
 clear all
 close all
 clc
+
+% Declaring path variables. End the string with a "\"
+global PATH_DATA PATH_EEGLAB PATH_RESULTS
+PATH_DATA = 'C:\Users\Jeffrey Benistant\Desktop\Mathlab\Data\data\';
+PATH_EEGLAB = 'G:\MDO\eeglab9_0_8_6b\';
+PATH_RESULTS = 'G:\MDO\Results\';
 
 % Start the Tic Timer.
     tic
 
 % Set the path to the Data Files.
-    cd PATH_DATA
+    cd(PATH_DATA)
 
 % Get the location of a Trig- / CNT-file
-    [ trigfile, cntfile, name, date, trigNr, meting ] = getFileInfo( 101, '1L', 1);
+    [ trigfile, cntfile, name, date, trigNr, meting ] = getFileInfo( 101, '1L', 1, PATH_DATA);
 
 % Output some message to the end user, that the file was correctly loaded
 % or so...
@@ -44,7 +45,7 @@ clc
 % Beside the endEEG, we can also calculate the start EEG time...
 % Find the first trigger point, substract 1000ms from it and multiply with
 % 5.
-    startEEG = (trig.t( start ) - 1000) * 5;
+    startEEG = (trig.t( 1 ) - 1000) * 5;
 
 % Read the EEG data.
     eeg = read_eep_cnt( cntfile, startEEG, endEEG );
