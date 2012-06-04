@@ -1,4 +1,4 @@
-function [ trigfile, cntfile, name, date, trigNr, meting ] = getFileInfo( trigNr, meting, dag )
+function [ trigfile, cntfile, name, date, trigNr, meting ] = getFileInfo( trigNr, meting, dag, PATH_DATA )
 
 % Deelnemers:
 % 101: Daniel
@@ -11,6 +11,11 @@ function [ trigfile, cntfile, name, date, trigNr, meting ] = getFileInfo( trigNr
 % Meting: 1L, 1R, 2L, 2R, 4L, 4R, 8L, 8R
 %
 % Dag: 1 / 2 / 3 / 4
+
+if PATH_DATA == false
+    PATH_DATA = '';
+    disp( 'getFileInfo: No path given.' );
+end
 
 switch trigNr
     case 101
@@ -34,15 +39,15 @@ switch dag
         date = '30.05';
 end
 
-trigfile = ['\Data\data\' date '.' int2str( trigNr ) '.' meting '.Daniel.trg'];
-cntfile  = ['\Data\data\' date '.' int2str( trigNr ) '.' meting '.Daniel.cnt'];
+trigfile = [ PATH_DATA date '.' int2str( trigNr ) '.' meting '.Daniel.trg'];
+cntfile  = [ PATH_DATA date '.' int2str( trigNr ) '.' meting '.Daniel.cnt'];
 
 fExist = exist( cntfile, 'file' );
 if fExist(1) == 0
-	disp(['Trig-File does not exist:' trigfile]);
+	disp(['getFileInfo: Trig-File does not exist:' trigfile]);
 end
 
 fExist = exist( cntfile, 'file' );
 if fExist(1) == 0
-    disp(['CNT-File does not exist:' cntfile]);
+    disp(['getFileInfo: CNT-File does not exist:' cntfile]);
 end
