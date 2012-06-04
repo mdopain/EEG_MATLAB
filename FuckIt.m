@@ -22,6 +22,11 @@ addpath( PATH_SCRIPTS, PATH_DATA, PATH_EEGLAB, PATH_RESULTS )
 % Get the location of a Trig- / CNT-file
     [ trigfile, cntfile, name, date, trigNr, meting ] = getFileInfo( 101, '1L', 1, PATH_DATA);
 
+% Create a directory for the output
+    if exist( [ PATH_RESULTS name ], 'dir') == false
+        disp( [ 'De map ' PATH_RESULTS name ' is aangemaakt.'] )
+        mkdir( [ PATH_RESULTS name ] );
+    end
 % Output some message to the end user, that the file was correctly loaded
 % or so...
     disp(['Trig-File found: ' trigfile]);
@@ -48,14 +53,9 @@ addpath( PATH_SCRIPTS, PATH_DATA, PATH_EEGLAB, PATH_RESULTS )
 % Then, since the sample frequency is 5000 Hz. multiply the number with 5.
     endEEG = (trig.t( end ) + 2000) * 5;
 
-% Beside the endEEG, we can also calculate the start EEG time...
-% Find the first trigger point, substract 1000ms from it and multiply with
-% 5.
-    startEEG = (trig.t( 1 ) - 1000) * 5;
-
 % Read the EEG data.
     disp( [ 'Reading EEG data: ' patientName ] )
-    eeg = read_eep_cnt( cntfile, startEEG, endEEG );
+    eeg = read_eep_cnt( cntfile, 1, endEEG );
     eeg = eeg.data;
 
 % Downsample the EEG data to 1000 Hz.
@@ -69,21 +69,25 @@ addpath( PATH_SCRIPTS, PATH_DATA, PATH_EEGLAB, PATH_RESULTS )
 % - Apply a Lowpass filter
 % - Apply a Stopband filter
 
-% replace EEG artifacts
-nr_trig=size(trig38,1);
+    disp( [ 'Applying filters: ' patientName ] )
+    disp( '-Replace artefacts' )
+
+% replace EEG artefacts
+nr_trig=size(trig.t,1);
 
     for i=1:nr_trig
-        starti=trig38(i)-5;
-        eindi=trig38(i)+20;
+        starti=trig.t(i)-5;
+        eindi=trig.t(i)+20;
         for j=1:64
-        eegstart=eeg(j,starti);
-        eegeind=eeg(j,eindi);
-        diffstap=(eegeind-eegstart)/26;
-        eegstuk=[1 : 26]*diffstap+eegstart;
-        eeg(j,starti:eindi)=eegstuk;
+            eegstart=eeg(j,starti);
+            eegeind=eeg(j,eindi);
+            diffstap=(eegeind-eegstart)/26;
+            eegstuk=[1 : 26]*diffstap+eegstart;
+            eeg(j,starti:eindi)=eegstuk;
         end
     end
 
+    disp( '-High Pass filter' )
 % LOW filt
 sampletime=1/1000;
 cutofflow=0.5;
@@ -101,6 +105,7 @@ xlim([0 100])
 title('low CP3')    
 hold on
 
+    disp( '-Low Pass filter' )
 % High filt 
 sampletime=1/1000;
 cutoffhigh=45;
@@ -119,6 +124,7 @@ ylim([10e-4 10e3])
 title('high CP3')
 hold on
 
+    disp( '-Stopband filter' )
 % NOTCH filt 
 sampletime=1/1000;
 cutofflow=45;
@@ -136,16 +142,17 @@ semilogy(w,Pxx,'g')
 xlim([0 100])
 title('notch CP3')
 
-saveas(gca, [PATH_RESULTS name '\' nametype '_PSD.fig'])
+    disp( '-Save the shizzle' )
+saveas(gca, [PATH_RESULTS name '\' patientName '_PSD.fig'])
 
 % make trigline and add
-trig=zeros(1,length(eeg));
-    for i=1:nr_trig
-        samplenr=trig38(i);
-        trig(samplenr)=1;
+    trig = zeros( 1, length( eeg ) );
+    for i = 1:nr_trig
+        samplenr = trig.t(i);
+        trig( samplenr ) = 1;
     end
 
-eeg_trig= [eeg;trig];
+eeg_trig = [eeg; trig];
 clear eeg;
 
 % EEGlab

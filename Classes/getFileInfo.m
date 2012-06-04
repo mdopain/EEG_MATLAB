@@ -49,7 +49,6 @@ end
 
 fExist = exist( cntfile, 'file' );
 if fExist(1) == 0
-
     disp(['getFileInfo: CNT-File does not exist:' cntfile]);
 end
 

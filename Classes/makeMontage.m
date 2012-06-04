@@ -15,7 +15,7 @@
 %       Output is the newly calculated montage.
 
 
-%function [EEGmontage] = makeMontage( eeg, electrodeNames, all )
+function [EEGmontage] = makeMontage( eeg, electrodeNames, all )
 electrodeNames = 'Fz';
 all = 0;
 
@@ -52,7 +52,7 @@ end
 EEGmontage = zeros( 64, length( eeg(i,:) ) );
 
 for i=1:64
-    EEGmontage(i) = eeg(i,:) - montageValue;
+    EEGmontage(i,:) = eeg(i,:) - montageValue;
 end
 
 clear eeg

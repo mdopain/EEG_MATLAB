@@ -1,6 +1,6 @@
 function trig = getTrigger( trigfile, trigNr )
 
-
+% JB rocks
 % Read a trigger file and sort all trigger indices per trigger type.
 % param1: Array of chars - Location of the trigger file.
 % param2: integer - Triggernumber.
