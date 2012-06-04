@@ -3,16 +3,21 @@ close all
 clc
 
 % Declaring path variables. End the string with a "\"
-global PATH_DATA PATH_EEGLAB PATH_RESULTS
+global PATH_WRKDIR PATH_SCRIPTS PATH_DATA PATH_EEGLAB PATH_RESULTS
+PATH_WRKDIR = 'C:\Users\Jeffrey Benistant\Desktop\Mathlab\';
+PATH_SCRIPTS = 'C:\Users\Jeffrey Benistant\Desktop\Mathlab\Analyse2\';
 PATH_DATA = 'C:\Users\Jeffrey Benistant\Desktop\Mathlab\Data\data\';
-PATH_EEGLAB = 'G:\MDO\eeglab9_0_8_6b\';
-PATH_RESULTS = 'G:\MDO\Results\';
+PATH_EEGLAB = 'C:\Users\Jeffrey Benistant\Desktop\Mathlab\eeglab9_0_8_6b\';
+PATH_RESULTS = 'C:\Users\Jeffrey Benistant\Desktop\Mathlab\Results\';
+
+% Add the path's to the work directory
+addpath( PATH_SCRIPTS, PATH_DATA, PATH_EEGLAB, PATH_RESULTS )
 
 % Start the Tic Timer.
     tic
 
 % Set the path to the Data Files.
-    cd(PATH_DATA)
+    cd( PATH_WRKDIR )
 
 % Get the location of a Trig- / CNT-file
     [ trigfile, cntfile, name, date, trigNr, meting ] = getFileInfo( 101, '1L', 1, PATH_DATA);
@@ -30,6 +35,7 @@ PATH_RESULTS = 'G:\MDO\Results\';
 % Load the Trigger file
 %
 % Read and obtain the Trigger points from the Trigger file.
+    disp( [ 'Reading TRIGGER data: ' patientName ] )
     trig = getTrigger( trigfile, trigNr );
 % From this moment on, trig.t contains the triggers.
 
@@ -48,6 +54,7 @@ PATH_RESULTS = 'G:\MDO\Results\';
     startEEG = (trig.t( 1 ) - 1000) * 5;
 
 % Read the EEG data.
+    disp( [ 'Reading EEG data: ' patientName ] )
     eeg = read_eep_cnt( cntfile, startEEG, endEEG );
     eeg = eeg.data;
 
@@ -55,7 +62,7 @@ PATH_RESULTS = 'G:\MDO\Results\';
     eeg = downsample( eeg', 5 )';
 
 % Montage M1M2
-    eeg = makeMontage( eeg, ['Fz']);
+    eeg = makeMontage( eeg, 'Fz', 0 );
 %% Filtering :D
 % - Put the signal on zero around the Trigger event.
 % - Apply a Highpass filter
