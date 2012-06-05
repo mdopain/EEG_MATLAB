@@ -4,11 +4,22 @@ clc
 
 % Declaring path variables. End the string with a "\"
 global PATH_WRKDIR PATH_SCRIPTS PATH_DATA PATH_EEGLAB PATH_RESULTS
-PATH_WRKDIR = 'C:\Users\Jeffrey Benistant\Desktop\Mathlab\';
-PATH_SCRIPTS = 'C:\Users\Jeffrey Benistant\Desktop\Mathlab\Analyse2\';
-PATH_DATA = 'C:\Users\Jeffrey Benistant\Desktop\Mathlab\Data\data\';
-PATH_EEGLAB = 'C:\Users\Jeffrey Benistant\Desktop\Mathlab\eeglab9_0_8_6b\';
-PATH_RESULTS = 'C:\Users\Jeffrey Benistant\Desktop\Mathlab\Results\';
+
+% Change this boolean statement if you want the hardcoded paths instead of
+% dialogs
+if 1==0
+    PATH_WRKDIR = 'C:\Users\Jeffrey Benistant\Desktop\Mathlab\';
+    PATH_SCRIPTS = 'C:\Users\Jeffrey Benistant\Desktop\Mathlab\Analyse2\';
+    PATH_DATA = 'C:\Users\Jeffrey Benistant\Desktop\Mathlab\Data\data\';
+    PATH_EEGLAB = 'C:\Users\Jeffrey Benistant\Desktop\Mathlab\eeglab9_0_8_6b\';
+    PATH_RESULTS = 'C:\Users\Jeffrey Benistant\Desktop\Mathlab\Results\';
+else
+    PATH_WRKDIR = uigetdir('C:\Users\','Select work directory');
+    PATH_SCRIPTS = uigetdir('C:\Users\','Select scripts directory');
+    PATH_DATA = uigetdir('C:\Users\','Select data directory');
+    PATH_EEGLAB = uigetdir('C:\Users\','Select EEGlab directory');
+    PATH_RESULTS = uigetdir('C:\Users\','Select results directory');
+end
 
 % Add the path's to the work directory
 addpath( PATH_SCRIPTS, PATH_DATA, PATH_EEGLAB, PATH_RESULTS )
