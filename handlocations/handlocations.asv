@@ -27,11 +27,15 @@ end
 
 %% Import data from excel sheet
 
-% This is the baseline measurement 
-% The data is structured in this way:
-% [daniel_l,daniel_r,paul_l,paul_r]
-data = xlsread('importfile_lokaties_PT.xlsx');
+% This is the baseline measurement of the first of June, with Daniël en
+% Paul as test subjects.
 
-%% 
+% The data is structured, row after row, like this:
+% 1. daniel_l 2. daniel_r 3. paul_l 4. paul_r
+importdata = xlsread('importfile_lokaties_PT.xlsx');
+
+%% Now to combine the positions with the perceptual thresholds
+
+F = Tr
 
 
