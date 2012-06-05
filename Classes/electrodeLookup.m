@@ -15,5 +15,5 @@ mapToNum = containers.Map( names, numbers );
 if isKey( mapToNum, electrode )
     num = mapToNum( electrode );
 else
-    dips( 'ElectrodeLookup: Given Electrode not found!' );
+    disp( 'ElectrodeLookup: Given Electrode not found!' );
 end

@@ -18,6 +18,7 @@
 function [EEGmontage] = makeMontage( eeg, electrodeNames, all )
 electrodeNames = 'Fz';
 all = 0;
+electrode = '';
 
 electrodeNames = cellstr( electrodeNames );
 n = length(electrodeNames);
@@ -28,7 +29,7 @@ montageValue = 0;
 % string are resolved using electrodeLookup().
 
 for i = 1:n;
-    electrode = electrodeNames(i)
+    electrode = electrodeNames(i);
     electrode = char( electrode );
     electrodeNumbers(i) = electrodeLookup( electrode );
 end

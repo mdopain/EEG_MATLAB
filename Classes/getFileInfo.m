@@ -1,4 +1,4 @@
-function [ trigfile, cntfile, name, date, trigNr, meting ] = getFileInfo( trigNr, meting, dag, PATH_DATA )
+function [ trigfile, cntfile, FullName, date, trigNr, meting ] = getFileInfo( trigNr, meting, dag, PATH_DATA )
 
 % Deelnemers:
 % 101: Daniel
@@ -6,7 +6,7 @@ function [ trigfile, cntfile, name, date, trigNr, meting ] = getFileInfo( trigNr
 % 999: Jeffrey
 % 104: Ruurd
 % 110: Niek
-% 111: ???
+% 111: Juriaan Brands
 %
 % Meting: 1L, 1R, 2L, 2R, 4L, 4R, 8L, 8R
 %
@@ -19,17 +19,24 @@ end
 
 switch trigNr
     case 101
-        name='Daniel Groothuyssen';
+        Name = 'Daniel';
+        FullName = 'Daniel Groothuysen';
     case 102
-        name='Paul Jonkers';
-    case 999
-        name='Jeffrey Benistant';
+        Name = 'Paul';
+        FullName = 'Paul Jonkers';
+    case 231
+        Name = 'Jeffrey';
+        FullName = 'Jeffrey Benistant';
     case 104
-        name='Ruurd de Schipper';
+        Name = 'Ruurd';
+        FullName = 'Ruurd de Schipper';
     case 110
-        name='Niek Prins';
+        Name = 'Niek';
+        FullName = 'Niek Prins';
     case 111
-        name='Juriaan Brandts';
+        Name = 'Juriaan';
+        FullName = 'Juriaan Brands';
+end
 
 switch dag
     case 1
@@ -38,10 +45,10 @@ switch dag
         date = '30.05';
 end
 
-trigfile = [ PATH_DATA date '.' int2str( trigNr ) '.' meting '.Daniel.trg'];
-cntfile  = [ PATH_DATA date '.' int2str( trigNr ) '.' meting '.Daniel.cnt'];
+trigfile = [ PATH_DATA date '.' int2str( trigNr ) '.' meting '.' Name '.trg'];
+cntfile  = [ PATH_DATA date '.' int2str( trigNr ) '.' meting '.' Name '.cnt'];
 
-fExist = exist( cntfile, 'file' );
+fExist = exist( trigfile, 'file' );
 if fExist(1) == 0
 	disp(['getFileInfo: Trig-File does not exist:' trigfile]);
 end

@@ -16,7 +16,7 @@ addpath( PATH_SCRIPTS, PATH_DATA, PATH_EEGLAB, PATH_RESULTS )
 % Start the Tic Timer.
     tic
 
-% Set the path to the Data Files.
+% Set the path to the Workdirectory.
     cd( PATH_WRKDIR )
 
 % Get the location of a Trig- / CNT-file
@@ -55,14 +55,16 @@ addpath( PATH_SCRIPTS, PATH_DATA, PATH_EEGLAB, PATH_RESULTS )
 
 % Read the EEG data.
     disp( [ 'Reading EEG data: ' patientName ] )
-    eeg = read_eep_cnt( cntfile, 1, endEEG );
+    eeg = read_eep_cnt_( cntfile, 1, endEEG );
     eeg = eeg.data;
 
 % Downsample the EEG data to 1000 Hz.
     eeg = downsample( eeg', 5 )';
 
 % Montage M1M2
-    eeg = makeMontage( eeg, 'Fz', 0 );
+    eeg = makeMontage( eeg, ['Fz'; 'M1'] , 0 );
+
+    clear endEEG
 %% Filtering :D
 % - Put the signal on zero around the Trigger event.
 % - Apply a Highpass filter
@@ -143,38 +145,36 @@ xlim([0 100])
 title('notch CP3')
 
     disp( '-Save the shizzle' )
-saveas(gca, [PATH_RESULTS name '\' patientName '_PSD.fig'])
+saveas(gca,  [PATH_RESULTS name '\' patientName '_PSD.fig' ])
 
 % make trigline and add
-    trig = zeros( 1, length( eeg ) );
+    trigers = zeros( 1, length( eeg ) );
     for i = 1:nr_trig
-        samplenr = trig.t(i);
-        trig( samplenr ) = 1;
+        trigers( trig.t(i) ) = 1;
     end
 
-eeg_trig = [eeg; trig];
-clear eeg;
+eeg_trig = [eeg; trigers];
+clear eeg trig;
 
 % EEGlab
-cd PATH_EEGLAB
 [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;% Load eeglab
 
-% EEG = pop_loadset('filename',[ nametype, 'FZ.set'],'filepath',['G:\\\Afstuderen\\Results\\',name '\\']);
+% EEG = pop_loadset('filename',[ patientName, 'FZ.set'],'filepath',['G:\\\Afstuderen\\Results\\',name '\\']);
 % EEG = eeg_checkset( EEG );
 
 
 EEG = pop_importdata('dataformat','array','nbchan',0,'data','eeg_trig','srate',1000,'pnts',0,'xmin',0,'comments',strvcat('downsampling 5','reference M1M2','stimulusartefact removed','low 0.5 Hz orde 2','high 45 Hz orde 4','notch 45-55 Hz orde 4'));
-EEG.setname=nametype;
+EEG.setname = patientName;
 EEG = eeg_checkset( EEG );
 
 clear eeg_trig 
 
 EEG = pop_chanevent(EEG, 65,'edge','leading','edgelen',0,'nbtype',1);
-EEG.setname=[ nametype 'FZ'];
+EEG.setname=[ patientName 'FZ'];
 EEG = eeg_checkset( EEG );
 
-EEG=pop_chanedit(EEG, 'load',{'G:\MDO\\eeglab9_0_8_6b\\elpos64_goed.loc' 'filetype' 'autodetect'});
-EEG = pop_saveset( EEG, 'filename',[nametype 'FZ.set'],'filepath',[PATH_RESULTS name]);    
+EEG=pop_chanedit(EEG, 'load',{[ PATH_EEGLAB 'elpos64_goed.loc' ] 'filetype' 'autodetect'});
+EEG = pop_saveset( EEG, 'filename',[patientName 'FZ.set'],'filepath',[PATH_RESULTS name]);    
 [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
 EEG = eeg_checkset( EEG );
 
@@ -183,7 +183,7 @@ EEG = pop_select( EEG,'nochannel',{'TP8' 'PO7' 'PO8'});
 EEG = eeg_checkset( EEG );
 
 % Epochs
-EEG = pop_epoch( EEG, {  }, [-0.2       0.5], 'newname', [nametype ' epoch FZ'], 'epochinfo', 'yes');
+EEG = pop_epoch( EEG, {  }, [-0.2 1.0], 'newname', [ patientName ], 'epochinfo', 'yes');
 EEG = eeg_checkset( EEG );
 EEG = pop_rmbase( EEG, [-200   -10]);
 EEG = eeg_checkset( EEG );
@@ -191,11 +191,11 @@ EEG = eeg_checkset( EEG );
 
 % Reject data
 pop_eegplot( EEG, 1, 1, 1);
-saveas(gca, [PATH_RESULTS name '\' nametype '_channels_FZ.fig'])
+saveas(gca, [PATH_RESULTS name '\' patientName '_channels_FZ.fig'])
 
 
 %%
-EEG = pop_saveset( EEG, 'filename',[nametype ' epoch FZ.set'],'filepath',[PATH_RESULTS name]);    
+EEG = pop_saveset( EEG, 'filename',[patientName ' epoch FZ.set'],'filepath',[PATH_RESULTS name]);    
 
 %% FZ
 CZ=find(ismember({EEG.chanlocs.labels}, 'Cz')==1);
@@ -210,19 +210,19 @@ CP3FZ=squeeze(EEG.data(CP3,:,:));
 % plot CZ C3 en CP3
 ylimERP=[-10 10];
 figure; pop_erpimage(EEG,1, C3,[],[],10,1,{},[],'' ,'yerplabel','\muV','erp','on','limits',[-200 500 ylimERP NaN NaN NaN NaN] ,'cbar','on','caxis',[-30 30] ,'spec',[1 35] ,'topo', { C3 EEG.chanlocs EEG.chaninfo } );
-title(gca,[nametype ' C3 FZ'])
-saveas(gca, [PATH_RESULTS name '\' nametype '_C3_FZ.fig'])
+title(gca,[patientName ' C3 FZ'])
+saveas(gca, [PATH_RESULTS name '\' patientName '_C3_FZ.fig'])
 
 figure; pop_erpimage(EEG,1, CP3,[],[],10,1,{},[],'' ,'yerplabel','\muV','erp','on','limits',[-200 500 ylimERP NaN NaN NaN NaN] ,'cbar','on','caxis',[-30 30] ,'spec',[1 35] ,'topo', { CP3 EEG.chanlocs EEG.chaninfo } );
-title(gca,[nametype ' CP3 FZ'])
-saveas(gca, [PATH_RESULTS name '\' nametype '_CP3_FZ.fig'])
+title(gca,[patientName ' CP3 FZ'])
+saveas(gca, [PATH_RESULTS name '\' patientName '_CP3_FZ.fig'])
 
 
 %% Rereference to M1M2
 M1=find(ismember({EEG.chanlocs.labels}, 'M1')==1);
 M2=find(ismember({EEG.chanlocs.labels}, 'M2')==1);
 EEG = pop_reref( EEG, [M1 M2] );
-EEG.setname=[ nametype ' M1M2'];
+EEG.setname=[ patientName ' M1M2'];
 EEG = eeg_checkset( EEG );
 
 CZ=find(ismember({EEG.chanlocs.labels}, 'Cz')==1);
@@ -235,35 +235,35 @@ C3M1M2=squeeze(EEG.data(C3,:,:));
 CP3M1M2=squeeze(EEG.data(CP3,:,:));
 
 %save EPs 
-save([PATH_RESULTS name '\' nametype '.mat'], 'CZM1M2','C3M1M2', 'CP3M1M2', 'CZFZ', 'CP3FZ','C3FZ', 'name', 'nametype')
+save([PATH_RESULTS name '\' patientName '.mat'], 'CZM1M2','C3M1M2', 'CP3M1M2', 'CZFZ', 'CP3FZ','C3FZ', 'name', 'patientName')
 
 % plot CZ C3 and CP3 to M1M2
 ylimERP=[-15 20];
 figure; pop_erpimage(EEG,1, C3,[],[],10,1,{},[],'' ,'yerplabel','\muV','erp','on','limits',[-200 500 ylimERP NaN NaN NaN NaN] ,'cbar','on','caxis',[-30 30] ,'spec',[1 35] ,'topo', { C3 EEG.chanlocs EEG.chaninfo } );
-title(gca,[nametype ' C3 M1M2'])
-saveas(gca, [PATH_RESULTS name '\' nametype '_C3_M1M2.fig'])
+title(gca,[patientName ' C3 M1M2'])
+saveas(gca, [PATH_RESULTS name '\' patientName '_C3_M1M2.fig'])
 
 figure; pop_erpimage(EEG,1, CP3,[],[],10,1,{},[],'' ,'yerplabel','\muV','erp','on','limits',[-200 500 ylimERP NaN NaN NaN NaN] ,'cbar','on','caxis',[-30 30] ,'spec',[1 35] ,'topo', { CP3 EEG.chanlocs EEG.chaninfo } );
-title(gca,[nametype ' CP3 M1M2'])
-saveas(gca, [PATH_RESULTS name '\' nametype '_CP3_M1M2.fig'])
+title(gca,[patientName ' CP3 M1M2'])
+saveas(gca, [PATH_RESULTS name '\' patientName '_CP3_M1M2.fig'])
 
 figure; pop_erpimage(EEG,1, CZ,[],[],10,1,{},[],'' ,'yerplabel','\muV','erp','on','limits',[-200 500 ylimERP NaN NaN NaN NaN] ,'cbar','on','caxis',[-30 30] ,'spec',[1 35] ,'topo', { CZ EEG.chanlocs EEG.chaninfo } );
-title(gca,[nametype ' CZ M1M2'])
-saveas(gca, [PATH_RESULTS name '\' nametype '_CZ_M1M2.fig'])
+title(gca,[patientName ' CZ M1M2'])
+saveas(gca, [PATH_RESULTS name '\' patientName '_CZ_M1M2.fig'])
 
 % Plot heads (discard M1 M2 and TP7)
 EEG = pop_select( EEG,'nochannel',{'M1', 'M2', 'TP7' });
-EEG.setname=[nametype 'M1M2 no M1, M2, TP7']; 
+EEG.setname=[patientName 'M1M2 no M1, M2, TP7']; 
 EEG = eeg_checkset( EEG );
 pop_topoplot(EEG,1, [20 50  70 80  90  100  110  120 130 140 150  185 200 230 260 280 300 320 350 400 ] ,'',[] ,0,'electrodes','on');
-title(gca,{[nametype ' epoch M1M2'], '20 ms'})
-saveas(gca, [PATH_RESULTS name '\' nametype '_heads_M1M2.fig'])
+title(gca,{[patientName ' epoch M1M2'], '20 ms'})
+saveas(gca, [PATH_RESULTS name '\' patientName '_heads_M1M2.fig'])
 
 %% rereference to FZ, only for plotting of heads (so M1 and M2 are
 % disabeld, as wel as TP7)
 FZ=find(ismember({EEG.chanlocs.labels}, 'FZ')==1);
 EEG = pop_reref( EEG, [FZ] );
-EEG.setname=[ nametype 'FZ'];
+EEG.setname=[ patientName 'FZ'];
 EEG = eeg_checkset( EEG );
 
 CZ=find(ismember({EEG.chanlocs.labels}, 'Cz')==1);
@@ -277,10 +277,10 @@ CP3FZ=squeeze(EEG.data(CP3,:,:));
 
 % Plot heads FZ
 EEG = pop_select( EEG,'nochannel',{'FZ', 'TP7' });
-EEG.setname=[nametype 'FZ no FZ TP7']; 
+EEG.setname=[patientName 'FZ no FZ TP7']; 
 EEG = eeg_checkset( EEG );
 pop_topoplot(EEG,1, [20 50 60 70 80  90 95 100 105 110  120 130 140 150  185 200 230 260 300 350 ] ,'',[] ,0,'electrodes','on');
-title(gca,{[nametype ' epoch FZ'], '20 ms'})
-saveas(gca, [PATH_RESULTS name '\' nametype '_heads_FZ.fig'])
+title(gca,{[patientName ' epoch FZ'], '20 ms'})
+saveas(gca, [PATH_RESULTS name '\' patientName '_heads_FZ.fig'])
 
 toc

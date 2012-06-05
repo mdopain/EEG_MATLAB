@@ -13,7 +13,7 @@ function trig = getTrigger( trigfile, trigNr )
     end
 
 % Read the EEP trigger file.
-    trg = read_eep_trg( trigfile );
+    trg = read_eep_trg_( trigfile );
 
 % tr1 is the matrix with all trigger times
     tr1 = [trg(:).time]';
