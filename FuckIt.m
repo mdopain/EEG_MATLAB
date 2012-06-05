@@ -14,15 +14,15 @@ if 1==0
     PATH_EEGLAB = 'C:\Users\Jeffrey Benistant\Desktop\Mathlab\eeglab9_0_8_6b\';
     PATH_RESULTS = 'C:\Users\Jeffrey Benistant\Desktop\Mathlab\Results\';
 else
-    PATH_WRKDIR = uigetdir('C:\Users\','Select work directory');
-    PATH_SCRIPTS = uigetdir('C:\Users\','Select scripts directory');
-    PATH_DATA = uigetdir('C:\Users\','Select data directory');
-    PATH_EEGLAB = uigetdir('C:\Users\','Select EEGlab directory');
-    PATH_RESULTS = uigetdir('C:\Users\','Select results directory');
+    PATH_WRKDIR = [uigetdir('C:\Users\','Select work directory') '\'];
+    PATH_SCRIPTS = [uigetdir(PATH_WRKDIR,'Select scripts directory') '\'];
+    PATH_DATA = [uigetdir(PATH_WRKDIR,'Select data directory') '\'];
+    PATH_EEGLAB = [uigetdir(PATH_WRKDIR,'Select EEGlab directory') '\'];
+    PATH_RESULTS = [uigetdir(PATH_WRKDIR,'Select results directory') '\'];
 end
 
-% Add the path's to the work directory
-addpath( PATH_SCRIPTS, PATH_DATA, PATH_EEGLAB, PATH_RESULTS )
+% Add the paths to the work directory
+addpath( genpath(PATH_SCRIPTS), PATH_DATA, PATH_EEGLAB, PATH_RESULTS );
 
 % Start the Tic Timer.
     tic
