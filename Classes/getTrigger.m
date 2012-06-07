@@ -29,3 +29,6 @@ function trig = getTrigger( trigfile, trigNr )
 
 % Sort all trigger times and save them to trig.t
     trig.t = round(tr(ind,1));
+
+% Garbage collector!
+    clear trigfile trigNr trg tr1 tr2 tr ind
