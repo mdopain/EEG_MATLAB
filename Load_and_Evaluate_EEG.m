@@ -4,6 +4,7 @@ clc
 
 % Declaring path variables. End the string with a "\"
 global PATH_WRKDIR PATH_SCRIPTS PATH_DATA PATH_EEGLAB PATH_RESULTS
+<<<<<<< HEAD:Load_and_Evaluate_EEG.m
 PATH_WRKDIR     = 'C:\Users\Jeffrey Benistant\Desktop\Mathlab\';
 PATH_SCRIPTS    = [ PATH_WRKDIR 'Analyse2\' ];
 PATH_DATA       = [ PATH_WRKDIR 'Data\data\' ];
@@ -18,9 +19,30 @@ Montage2All = 1; % 0 or 1
 
 NoEEGChangels = {'TP8' 'PO7' 'PO8'};
 
-%%
+%{
 % Add the path's to the work directory
 addpath( PATH_SCRIPTS, PATH_DATA, PATH_EEGLAB, PATH_RESULTS );
+=======
+
+% Change this boolean statement if you want the hardcoded paths instead of
+% dialogs
+if 1==1
+    PATH_WRKDIR = 'C:\Users\Daniel\Documents\Studie\MDO_offline\';
+    PATH_SCRIPTS = 'C:\Users\Daniel\Documents\Studie\MDO_offline\GITtest\';
+    PATH_DATA = 'C:\Users\Daniel\Documents\Studie\MDO_offline\data MDO\';
+    PATH_EEGLAB = 'C:\Users\Daniel\Documents\Studie\MDO_offline\vanuit MST\eeglab9_0_8_6b\';
+    PATH_RESULTS = 'C:\Users\Daniel\Documents\Studie\MDO_offline\results\';
+else
+    PATH_WRKDIR = [uigetdir('C:\Users\','Select work directory') '\'];
+    PATH_SCRIPTS = [uigetdir(PATH_WRKDIR,'Select scripts directory') '\'];
+    PATH_DATA = [uigetdir(PATH_WRKDIR,'Select data directory') '\'];
+    PATH_EEGLAB = [uigetdir(PATH_WRKDIR,'Select EEGlab directory') '\'];
+    PATH_RESULTS = [uigetdir(PATH_WRKDIR,'Select results directory') '\'];
+end
+
+% Add the paths to the work directory
+addpath( genpath(PATH_SCRIPTS), PATH_DATA, PATH_EEGLAB, PATH_RESULTS );
+%}
 
 % Start the Tic Timer.
     tic;
