@@ -4,7 +4,6 @@ clc
 
 % Declaring path variables. End the string with a "\"
 global PATH_WRKDIR PATH_SCRIPTS PATH_DATA PATH_EEGLAB PATH_RESULTS
-<<<<<<< HEAD:Load_and_Evaluate_EEG.m
 PATH_WRKDIR     = 'C:\Users\Jeffrey Benistant\Desktop\Mathlab\';
 PATH_SCRIPTS    = [ PATH_WRKDIR 'Analyse2\' ];
 PATH_DATA       = [ PATH_WRKDIR 'Data\data\' ];
@@ -184,7 +183,7 @@ addpath( genpath(PATH_SCRIPTS), PATH_DATA, PATH_EEGLAB, PATH_RESULTS );
 % Create a figure of the filtered signal (visual feedback);
     [ Pxx, w ] = pwelch( eeg( 48, :), [], [], [], 1000, 'onesided' );
     semilogy( w, Pxx, 'g' )
-    title( 'notch 50/150/250/350/450' )
+    title( 'notch 50' )
     hold on
 
 % Save the image
@@ -193,10 +192,10 @@ addpath( genpath(PATH_SCRIPTS), PATH_DATA, PATH_EEGLAB, PATH_RESULTS );
 
 
 % Calculate the FFT of the FZ electrode
-    Fs = 1000;                    % Sampling frequency
-    T = 1/Fs;                     % Sample time
-    L = 1000;                     % Length of signal
-    y = eeg( electrodeLookup( 'fz' ), : );              % Signal (electrode 6)
+    Fs = 1000;                                  % Sampling frequency
+    T = 1/Fs;                                   % Sample time
+    y = eeg( electrodeLookup( 'fz' ), : );      % Signal (electrode 6)
+    L = length( y );
 
     NFFT = 2^16;
     Y = fft( y, NFFT ) / L;
@@ -227,25 +226,20 @@ eeg_trig = [eeg; trigers];
 clear eeg trig;
 
 %% EEGlab
-% EEGlab
 [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
-
-% EEG = pop_loadset('filename',[ patientName, 'FZ.set'],'filepath',['G:\\\Afstuderen\\Results\\',name '\\']);
-% EEG = eeg_checkset( EEG );
-
 
 EEG = pop_importdata( 'dataformat', 'array', 'nbchan', 0, 'data', 'eeg_trig', 'srate', 1000, 'pnts', 0, 'xmin', 0, 'comments', char( 'downsampling 5', 'reference M1M2', 'stimulusartefact removed', 'low 0.5 Hz orde 2', 'high 45 Hz orde 4', 'notch 45-55 Hz orde 4' ) );
 EEG.setname = patientName;
 EEG = eeg_checkset( EEG );
 
-clear eeg_trig 
+clear eeg_trig
 
 EEG = pop_chanevent( EEG, 65, 'edge', 'leading', 'edgelen', 0, 'nbtype', 1 );
 EEG.setname=[ patientName 'FZ'];
 EEG = eeg_checkset( EEG );
 
 EEG=pop_chanedit(EEG, 'load',{[ PATH_EEGLAB 'elpos64_goed.loc' ] 'filetype' 'autodetect'});
-EEG = pop_saveset( EEG, 'filename',[patientName 'FZ.set'],'filepath',[PATH_RESULTS name]);    
+EEG = pop_saveset( EEG, 'filename',[patientName 'FZ.set'],'filepath',[PATH_RESULTS name]);
 [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
 EEG = eeg_checkset( EEG );
 
@@ -264,11 +258,8 @@ EEG = eeg_checkset( EEG );
 pop_eegplot( EEG, 1, 1, 1);
 saveas(gca, [PATH_RESULTS name '\' patientName '_channels_FZ.fig'])
 
-%%
-% EEG = pop_saveset( EEG, 'filename',[patientName ' epoch FZ.set'],'filepath',[PATH_RESULTS name]);
-
-%%
 %% FZ
+%{
 CZ=find(ismember({EEG.chanlocs.labels}, 'Cz')==1);
 C3=find(ismember({EEG.chanlocs.labels}, 'C3')==1);
 CP3=find(ismember({EEG.chanlocs.labels}, 'CP3')==1);
@@ -290,8 +281,8 @@ saveas(gca, [PATH_RESULTS name '\' patientName '_CP3_FZ.fig'])
 
 
 %% Rereference to M1M2
-M1=find(ismember({EEG.chanlocs.labels}, 'M1')==1);
-M2=find(ismember({EEG.chanlocs.labels}, 'M2')==1);
+M1 = find( ismember( { EEG.chanlocs.labels }, 'M1' ) == 1 );
+M2 = find( ismember( { EEG.chanlocs.labels }, 'M2' ) == 1 );
 EEG = pop_reref( EEG, [M1 M2] );
 EEG.setname=[ patientName ' M1M2'];
 EEG = eeg_checkset( EEG );
@@ -321,7 +312,7 @@ saveas(gca, [PATH_RESULTS name '\' patientName '_CP3_M1M2.fig'])
 figure; pop_erpimage(EEG,1, CZ,[],[],10,1,{},[],'' ,'yerplabel','\muV','erp','on','limits',[-200 500 ylimERP NaN NaN NaN NaN] ,'cbar','on','caxis',[-30 30] ,'spec',[1 35] ,'topo', { CZ EEG.chanlocs EEG.chaninfo } );
 title(gca,[patientName ' CZ M1M2'])
 saveas(gca, [PATH_RESULTS name '\' patientName '_CZ_M1M2.fig'])
-
+%}
 %%
 
 % eeg.Redraw
