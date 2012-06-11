@@ -3,12 +3,7 @@ close all
 clc
 
 % Declaring path variables. End the string with a "\"
-global PATH_WRKDIR PATH_SCRIPTS PATH_DATA PATH_EEGLAB PATH_RESULTS
-PATH_WRKDIR     = 'C:\Users\Daniel\Documents\Studie\MDO_offline\';
-PATH_SCRIPTS    = [ PATH_WRKDIR 'repository\'];
-PATH_DATA       = [ PATH_WRKDIR 'data MDO\' ];
-PATH_EEGLAB     = [ PATH_WRKDIR 'eeglab10_2_5_8b\' ];
-PATH_RESULTS    = [ PATH_WRKDIR 'Results\' ];
+load('C:/pathsave.mat');
 
 TrigNr = 102;
 Meting = '8R';
