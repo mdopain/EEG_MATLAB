@@ -73,7 +73,7 @@ function [ trigfile, cntfile, FullName, date, trigNr, meting ] = getFileInfo( tr
     if fExist(1) == 0
         disp(['getFileInfo: Trig-File does not exist:' trigfile]);
     end
-    
+
 % Check if the CNTfile exists
     fExist = exist( cntfile, 'file' );
     if fExist(1) == 0
