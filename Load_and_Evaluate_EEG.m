@@ -7,7 +7,7 @@ global PATH_WRKDIR PATH_SCRIPTS PATH_DATA PATH_EEGLAB PATH_RESULTS
 PATH_WRKDIR     = 'C:\Users\Daniel\Documents\Studie\MDO_offline\';
 PATH_SCRIPTS    = [ PATH_WRKDIR 'repository\'];
 PATH_DATA       = [ PATH_WRKDIR 'data MDO\' ];
-PATH_EEGLAB     = [ PATH_WRKDIR 'eeglab9_0_8_6b\' ];
+PATH_EEGLAB     = [ PATH_WRKDIR 'eeglab10_2_5_8b\' ];
 PATH_RESULTS    = [ PATH_WRKDIR 'Results\' ];
 
 TrigNr = 102;
@@ -213,12 +213,22 @@ EEG = pop_importdata( 'dataformat', 'array', 'nbchan', 0, 'data', 'eeg_trig', 's
 EEG.setname = patientName;
 EEG = eeg_checkset( EEG );
 
+% This code overwrites the data from the FC3 channel (41) with the data
+% from the TP7 channel (61) for every measurement on the third day (first
+% of June). This because we had to rewire channels due to a defect. 
+if MetingDag==3
+    EEG.data(41,:)=EEG.data(61,:);
+end
+
+
 clear eeg_trig
 
+% Setting up trigger
 EEG = pop_chanevent( EEG, 65, 'edge', 'leading', 'edgelen', 0, 'nbtype', 1 );
 EEG.setname=[ patientName 'FZ'];
 EEG = eeg_checkset( EEG );
 
+% Loading electrode location
 EEG=pop_chanedit(EEG, 'load',{[ PATH_EEGLAB 'elpos64_goed.loc' ] 'filetype' 'autodetect'});
 EEG = pop_saveset( EEG, 'filename',[patientName 'FZ.set'],'filepath',[PATH_RESULTS name]);
 [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
