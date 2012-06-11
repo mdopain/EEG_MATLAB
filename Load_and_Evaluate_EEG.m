@@ -16,7 +16,7 @@ MetingDag = 1;
 Montage = ['M1'; 'M2'];
 Montage2All = 1; % 0 or 1
 
-NoEEGChangels = {'TP8' 'PO7' 'PO8'};
+NoEEGChangels = {'TP8' 'PO7' 'PO8' 'TP7'};
 
 %{
 % Add the path's to the work directory
@@ -136,7 +136,7 @@ addpath( genpath(PATH_SCRIPTS), PATH_DATA, PATH_EEGLAB, PATH_RESULTS );
     disp( '-High-pass filter' )
     sampletime = 1/1000;
     cutofflow = 0.5;
-    order = 2;
+    order = 4;
     nfc1 = 2 * sampletime * cutofflow;
 
 % Create the actual filter
@@ -154,7 +154,8 @@ addpath( genpath(PATH_SCRIPTS), PATH_DATA, PATH_EEGLAB, PATH_RESULTS );
     sampletime=1/1000;
     cutoffhigh=50;
     order=4;
-
+    
+    
 % Filtering
     nfc2 = 2 * sampletime * cutoffhigh;         % Index for filtering (0.0<nfc2<1.0), high freq
     [B,A] = butter( order, nfc2, 'low' );            % Create 2nd order butterworth filter with bandpass (defined before)    
@@ -243,7 +244,7 @@ EEG = pop_saveset( EEG, 'filename',[patientName 'FZ.set'],'filepath',[PATH_RESUL
 [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
 EEG = eeg_checkset( EEG );
 
-EEG = pop_select( EEG,'nochannel',{'TP8' 'PO7' 'PO8'});
+EEG = pop_select( EEG,'nochannel',{'TP8' 'PO7' 'PO8' 'TP7'});
 [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
 EEG = eeg_checkset( EEG );
 
