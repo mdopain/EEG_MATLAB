@@ -2,8 +2,8 @@ clear all
 close all
 clc
 
-% Declaring path variables. End the string with a "\"
-load('C:/pathsave.mat');
+% Load paths dynamically
+load('C:/pathsave/pathsave.mat');
 
 TrigNr = 102;
 Meting = '8R';
