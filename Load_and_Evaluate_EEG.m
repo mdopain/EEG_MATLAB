@@ -5,6 +5,15 @@ clc
 % Load paths dynamically
 load('C:/pathsave/pathsave.mat');
 
+
+% Declaring path variables. End the string with a "\"
+global PATH_WRKDIR PATH_DATA PATH_EEGLAB PATH_RESULTS
+PATH_WRKDIR     = 'C:\Users\Jeffrey Benistant\Desktop\Mathlab\';
+PATH_DATA       = [ PATH_WRKDIR 'Data\Raw\' ];
+PATH_EEGLAB     = [ PATH_WRKDIR 'eeglab10_2_5_8b\' ];
+PATH_RESULTS    = [ PATH_WRKDIR 'Results\' ];
+%}
+
 TrigNr = 102;
 Meting = '8R';
 MetingDag = 1;
@@ -14,10 +23,6 @@ Montage2All = 1; % 0 or 1
 NoEEGChangels = {'TP8' 'PO7' 'PO8' 'TP7'};
 
 
-% Add the paths to the work directory
-addpath( genpath(PATH_SCRIPTS), PATH_DATA, genpath(PATH_EEGLAB), PATH_RESULTS );
-
-
 % Start the Tic Timer.
     tic;
 
@@ -25,7 +30,7 @@ addpath( genpath(PATH_SCRIPTS), PATH_DATA, genpath(PATH_EEGLAB), PATH_RESULTS );
     cd( PATH_WRKDIR );
 
 % Get the location of a Trig- / CNT-file
-    [ trigfile, cntfile, name, date, trigNr, meting ] = getFileInfo( TrigNr, Meting, MetingDag, PATH_DATA);
+    [ trigfile, cntfile, name, ShortName date, trigNr, meting ] = getFileInfo( TrigNr, Meting, MetingDag, PATH_DATA);
 
 % Create a directory for the output
     if exist( [ PATH_RESULTS name ], 'dir') == false
@@ -60,7 +65,7 @@ addpath( genpath(PATH_SCRIPTS), PATH_DATA, genpath(PATH_EEGLAB), PATH_RESULTS );
 
 % Read the EEG data.
     disp( [ 'Reading EEG data: ' patientName ] )
-    eeg = read_eep_cnt( cntfile, 1, endEEG );
+    eeg = read_eep_cnt_( cntfile, 1, endEEG );
     eeg = eeg.data;
 
 % Downsample the EEG data to 1000 Hz.
@@ -204,7 +209,7 @@ clear eeg trig;
 %% EEGlab
 [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
 
-EEG = pop_importdata( 'dataformat', 'array', 'nbchan', 0, 'data', 'eeg_trig', 'srate', 1000, 'pnts', 0, 'xmin', 0, 'comments', char( 'downsampling 5', 'reference M1M2', 'stimulusartefact removed', 'low 0.5 Hz orde 2', 'high 45 Hz orde 4', 'notch 45-55 Hz orde 4' ) );
+EEG = pop_importdata( 'dataformat', 'array', 'nbchan', 0, 'data', 'eeg_trig', 'srate', 1000, 'pnts', 0, 'xmin', 0, 'comments', char( 'downsampling 5', 'reference M1M2', 'stimulusartefact removed', 'low 0.5 Hz orde 4', 'high 50 Hz orde 4', 'notch 49-51 Hz orde 4' ) );
 EEG.setname = patientName;
 EEG = eeg_checkset( EEG );
 
@@ -229,7 +234,7 @@ EEG = pop_saveset( EEG, 'filename',[patientName 'FZ.set'],'filepath',[PATH_RESUL
 [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
 EEG = eeg_checkset( EEG );
 
-EEG = pop_select( EEG,'nochannel',{'TP8' 'PO7' 'PO8' 'TP7'});
+EEG = pop_select( EEG,'nochannel', NoEEGChangels);
 [ALLEEG EEG CURRENTSET] = eeg_store(ALLEEG, EEG);
 EEG = eeg_checkset( EEG );
 

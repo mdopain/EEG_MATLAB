@@ -20,7 +20,7 @@ function num = electrodeLookup( electrode )
     if isKey( mapToNum, electrode )
 
     % Save the number of the given electrode
-        num = mapToNum( electrode );
+        num = mapToNum( char( electrode ) );
     else
     
     % The electrode could not be found, show a message.

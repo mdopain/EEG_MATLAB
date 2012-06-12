@@ -1,4 +1,4 @@
-function [ trigfile, cntfile, FullName, date, trigNr, meting ] = getFileInfo( trigNr, meting, dag, PATH_DATA )
+function [ trigfile, cntfile, FullName, Name, date, trigNr, meting ] = getFileInfo( trigNr, meting, dag, PATH_DATA )
 
 % Deelnemers:
 % 101: Daniel
@@ -21,6 +21,10 @@ function [ trigfile, cntfile, FullName, date, trigNr, meting ] = getFileInfo( tr
         PATH_DATA = '';
         disp( 'getFileInfo: No path given.' );
     end
+
+% Preset info
+    Name = '';
+    FullName = '';
 
 % Find the corresponding name and fullName by the Trigger number
     switch trigNr
@@ -48,6 +52,8 @@ function [ trigfile, cntfile, FullName, date, trigNr, meting ] = getFileInfo( tr
         case 113
             Name = 'Thijs';
             FullName = 'Thijs van den Broek';
+        otherwise
+            disp('Shit! Cannot find the name...')
     end
 
 % find the corresponding date by the daynumber
@@ -81,4 +87,4 @@ function [ trigfile, cntfile, FullName, date, trigNr, meting ] = getFileInfo( tr
     end
 
 % Garbage collector!
-    clear dag PATH_DATA Name
+    clear dag PATH_DATA
