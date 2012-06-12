@@ -82,37 +82,9 @@ ERP_timeStop  = 1000;
     
     
  %% Generate EPs per trigger
- hold on
  
- window=[0.100 0.600];
- minValues=zeros(150,2);
- maxValues=zeros(150,2);
-
- epochNum=length(EEG2M1M2.data(Enr(4),1,:));
- amplitudes=zeros(1,epochNum);
+ [A,min,max]=wenGraph(EEG2M1M2,20,electrodeLookup('C3'));
  
- for i=1:epochNum
-     if mod(i,9)==0
-         figure
-     end
-     subplot(3,3,mod(i,9)+1)
-     currentEpoch = EEG2M1M2.data(Enr(4),:,i);
-     plot(EEG2M1M2.times,currentEpoch,'g');
-     minValues(i,:) = min(currentEpoch);
-     maxValues(i,:) = max(currentEpoch);
-     
-     plot(minValues(i,2),minValues(i,1),'b*');
-     plot(maxValues(i,2),maxValues(i,1),'b*');
-     
-     amplitudes(i) = maxValues(i,1)-minValues(i,1);
-     
- end
  
- figure;
- plot(1:epochNum,amplitudes,'b');
- title(['amplitude per event in a ' epochNum ' epoch paradigm'])
-   
-    
-    
 %% Stop the timer!
     toc
