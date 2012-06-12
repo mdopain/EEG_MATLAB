@@ -21,7 +21,7 @@ ERP_timeStop  = 1000;
     cd( PATH_WRKDIR );
 
 % Add the paths to the work directory
-    addpath( genpath(PATH_SCRIPTS), PATH_DATA, PATH_RESULTS );
+    addpath( genpath(PATH_SCRIPTS), genpath(PATH_DATA), PATH_RESULTS );
 
 % Start the Tic Timer.
     tic;
@@ -34,9 +34,9 @@ ERP_timeStop  = 1000;
     saveName = [date '.' meting '.' Name ];
 
     setFile = [ date '.' meting '.' Name '.set' ];
-    fExist = exist( [PATH_WRKDIR '\epochs\'  setFile ], 'file' );
+    fExist = exist( [PATH_DATA '\epochs\'  setFile ], 'file' );
     if fExist(1) == 0
-        error( [ 'SET-File does not exist:' PATH_WRKDIR '\epochs\'  setFile ] )
+        error( [ 'SET-File does not exist:' PATH_DATA '\epochs\'  setFile ] )
     end
 %% Create folders, if they dont yet exist
     if exist( [ PATH_RESULTS FullName ], 'dir') == false
@@ -59,7 +59,7 @@ ERP_timeStop  = 1000;
     [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
 
 % Read the dataset
-    EEG = pop_loadset( 'filename', setFile, 'filepath', [PATH_WRKDIR '\epochs\']  );
+    EEG = pop_loadset( 'filename', setFile, 'filepath', [PATH_DATA '\epochs\']  );
     EEG = eeg_checkset( EEG );
 
     
@@ -76,53 +76,44 @@ ERP_timeStop  = 1000;
     end
 
 %% Reference to FZ
-    EEG2FZ = pop_reref( EEG, [FZ] );
-    EEG2FZ.setname = [ patientName ' Fz'];
-    EEG2FZ = eeg_checkset( EEG2FZ );
-%%
-%{
-% Make picachu!
-    for i = 1:length( plots )
-        figure;
-        pop_erpimage( EEG2FZ, 1, Enr( i ), [], [], 10, 1, {}, [], '', 'yerplabel', '\muV', 'erp', 'on', 'limits', [-200 ERP_timeStop ERP_FZ_Ylim NaN NaN NaN NaN] ,'cbar','on','caxis',[-30 30] ,'spec',[1 35] ,'topo', { Enr( i ) EEG2FZ.chanlocs EEG2FZ.chaninfo } );
-        title(gca, [ patientName ' ' char( plots( i ) ) ' FZ' ] )
-        saveas(gca, [ PATH_RESULTS FullName '\FIG\FZ_' saveName '_' char( plots( i ) ) '.fig' ] );
-        saveas(gca, [ PATH_RESULTS FullName '\PNG\FZ_' saveName '_' char( plots( i ) ) '.png' ] );
-        close;
-    end
-%}
-%%
-    figure
-    for i = 1:length( EEG2FZ.times )
-        pica( i ) = sum( EEG2FZ.data( Enr( 5 ), i, 1:30 ) );
-    end
-    plot( EEG2FZ.times, pica ./ EEG2FZ.trials );
-    title( gca, 'Average Epoches' )
-    xlabel( gca, 'Time' )
-    ylabel( gca,'Intensity' )
-    hold on
-%    saveas( h, [ PATH_RESULTS FullName '\PNG\FZ_' saveName '_' char( plots( i ) ) '.png' ] );
-
-    clear EEG2FZ;
-
-%% Reference to M1M2
-%{
-    EEG2M1M2 = pop_reref( EEG, [ M1 M2] );
-    EEG2M1M2.setname = [ patientName ' M1-M2'];
+    EEG2M1M2 = pop_reref( EEG, [M1 M2] );
+    EEG2M1M2.setname = [ patientName ' M1M2'];
     EEG2M1M2 = eeg_checkset( EEG2M1M2 );
+    
+    
+ %% Generate EPs per trigger
+ hold on
+ 
+ window=[0.100 0.600];
+ minValues=zeros(150,2);
+ maxValues=zeros(150,2);
 
-% Make picachu!
-    for i = 1:length( plots )
-        figure;
-        Enr( i )
-        pop_erpimage( EEG2M1M2, 1, Enr( i ), [], [], 10, 1, {}, [], '', 'yerplabel', '\muV', 'erp', 'on', 'limits', [-200 ERP_timeStop ERP_M1M2_Ylim NaN NaN NaN NaN], 'cbar', 'on', 'caxis', [-30 30], 'spec', [1 35], 'topo', { Enr( i ) EEG2M1M2.chanlocs EEG2M1M2.chaninfo } );
-        title( gca, [ patientName ' ' char( plots( i ) ) ' M1M2' ] )
-        saveas(gca, [ PATH_RESULTS FullName '\FIG\M1M2_' saveName '_' char( plots( i ) ) '.fig'] );
-        saveas(gca, [ PATH_RESULTS FullName '\PNG\M1M2_' saveName '_' char( plots( i ) ) '.png'] );
-        close;
-    end
-
-    clear EEG2M1M2;
-%}
+ epochNum=length(EEG2M1M2.data(Enr(4),1,:));
+ amplitudes=zeros(1,epochNum);
+ 
+ for i=1:epochNum
+     if mod(i,9)==0
+         figure;
+         title('')
+     end
+     subplot(3,3,mod(i,9)+1)
+     currentEpoch = EEG2M1M2.data(Enr(4),:,i);
+     plot(EEG2M1M2.times,currentEpoch,'g');
+     minValues(i,:) = min(currentEpoch);
+     maxValues(i,:) = max(currentEpoch);
+     
+     plot(minValues(i,2),minValues(i,1),'b*');
+     plot(maxValues(i,2),maxValues(i,1),'b*');
+     
+     amplitudes(i) = maxValues(i,1)-minValues(i,1);
+     
+ end
+ 
+ figure;
+ plot(1:epochNum,amplitudes,'b');
+ title(['amplitude per event in a ' epochNum ' epoch paradigm'])
+ 
+    
+    
 %% Stop the timer!
     toc
