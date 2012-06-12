@@ -63,7 +63,7 @@ ERP_timeStop  = 1000;
     EEG = eeg_checkset( EEG );
 
     
-%% Reference to FZ
+%% Reference to M1M2
     EEG2M1M2 = pop_reref( EEG, [electrodeLookup('M1'),electrodeLookup('M2')] );
     EEG2M1M2.setname = [ patientName ' M1M2'];
     EEG2M1M2 = eeg_checkset( EEG2M1M2 );
@@ -71,7 +71,7 @@ ERP_timeStop  = 1000;
     
  %% Generate EPs per trigger
  
- [A,min,max]=wenGraph(EEG2M1M2,10,electrodeLookup('C3'));
+ [A,min,max]=wenGraph(EEG2M1M2,30,electrodeLookup('C3'));
  
  
 %% Stop the timer!

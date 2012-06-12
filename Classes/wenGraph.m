@@ -56,18 +56,14 @@ hold on
      % 'reset' is a boolean which detects if the loop variable i is a
      % multiple of the variable 'average'. 
      reset = mod(i,average)==0;
-     if mod(n,subplot_x*subplot_y)==0
-         figure;  
-     end
-     
-     
+         
      currentEpoch = eeg.data(electrode,:,i);
      
      % If the specified number of epochs to mediate over (saved in the
      % variable 'average') has not yet been reached, the if statement gets
      % executed. Otherwise, see else. 
      if ~reset
-         averageEpoch(n,:)=averageEpoch(n,:)+currentEpoch;
+         averageEpoch(n,:)=averageEpoch(n,:)+currentEpoch./average;
      else
          
          % This code saves the minimum and maximum of the 
@@ -97,8 +93,13 @@ hold on
             % Plotting each averaged number of epochs along with the
             % selected minimum and maximum, to check if the algorithm
             % approximated the correct peaks
-            subplot(subplot_x,subplot_y,n)
             
+            if mod(n,subplot_x*subplot_y)==0
+                figure;  
+            end
+            
+            subplot(subplot_x,subplot_y,mod(n,subplot_x*subplot_y)+1)
+                                    
             fill([windowNegative(1) windowNegative(2)],[minValAvg(n,1) maxValAvg(n,1)],'b');
             fill([windowPositive(1) windowPositive(2)],[minValAvg(n,1) maxValAvg(n,1)],'r');
             
@@ -115,7 +116,7 @@ hold on
      amplitudes(i) = maxValues(i,1)-minValues(i,1);
          
          n=n+1;
-         averageEpoch(n,:)=currentEpoch;
+         averageEpoch(n,:)=currentEpoch./average;
      end
      
      [minValues(i,1),minValues(i,2)] =min(currentEpoch(windowNegative(1):windowNegative(2)));
@@ -139,6 +140,9 @@ hold on
  subplot(2,2,3)
  bar(graphData(:,1).',graphData(:,2).');
  title(['min-max differences averaged in ' num2str(average) '-epoch bins in a ' num2str(epochNum) ' epoch paradigm'],'FontSize',15)
+ xlabel('Epoch bins')
+ ylabel('Averaged NP-amplitude in \muV')
+ 
  
  subplot(2,2,4)
  plot(graphData(:,1),graphData(:,2));

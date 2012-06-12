@@ -18,6 +18,7 @@ windowedEpoch = zeros(length(epoch));
 for j=1:length(epoch)
     
     outOfWindow = (j<=min) || (j>=max);
+    
              if outOfWindow
                 windowedEpoch(j) = 0;
              else
