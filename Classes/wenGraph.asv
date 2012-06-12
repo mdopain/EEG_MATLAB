@@ -13,7 +13,7 @@
 %                   corresponding max-min differences in the second. 
 
 
-function [graphData]=wenGraph(eeg,average,electrode)
+function [graphData,minValues,maxValues]=wenGraph(eeg,average,electrode)
 
 hold on
  
@@ -28,7 +28,9 @@ hold on
  
  averageEpoch=zeros(length(eeg.data(electrode,:,1)));
  
- graphData=zeros(round(epochNum/average),2);
+ graphData=zeros(floor(epochNum/average),2);
+ 
+ timeBeforePulse=200;
  
  n=1;       % Counter for the number of datapoints
  
@@ -55,20 +57,24 @@ hold on
      else
          % This code saves the minimum and maximum of the past number of
          % averaged epochs, to hopefully select the EP peaks. 
-         minValAvg(n,:)=min(averageEpoch(n,:));
-         maxValAvg(n,:)=max(averageEpoch(n,:));
+         [minValAvg(n,1),minValAvg(n,2)]=min(averageEpoch(n,:));
+         [maxValAvg(n,1),maxValAvg(n,2)]=max(averageEpoch(n,:));
          
          % It then saves the epoch number in an array called 'graphData',
          % where the NP-amplitude (difference between maximum and minimum)
          % also gets stored.
          graphData(n,1)=i;
-         graphData(n,2)=maxValAvg(n,2)-minValAvg(n,2);
+         graphData(n,2)=maxValAvg(n,1)-minValAvg(n,1);
          n=n+1;
          averageEpoch(n,:)=currentEpoch;
      end
      
-     minValues(i,:) = min(currentEpoch);
-     maxValues(i,:) = max(currentEpoch);
+     [minValues(i,1),minValues(i,2)] = min(currentEpoch);
+     [maxValues(i,1),maxValues(i,2)]= max(currentEpoch);
+     
+     % Convert time indices to seconds by subtracting 200 ms
+     minValues(i,2)=minValues(i,2)-timeBeforePulse;
+     maxValues(i,2)=maxValues(i,2)-timeBeforePulse;
      
      plot(eeg.times,currentEpoch,'g');
      hold on
@@ -80,11 +86,14 @@ hold on
      
  end
 
- 
+
  figure;
  plot(1:epochNum,amplitudes,'b');
- title(['min-max differences per event in a ' epochNum ' epoch paradigm'])
+ title(['min-max differences per event in a ' num2str(epochNum) ' epoch paradigm'])
  figure;
- plot(graphData(:,1),graphData(:,2));
- title(['min-max differences averaged in ' average '-number bins in a ' epochNum ' epoch paradigm'])
+ subplot(1,2,1)
+ hist(A(:,2).',A(:,1).');
+ subplot(1,2,2)
+ plot(A(:,1),A(:,2));
+ title(['min-max differences averaged in ' num2str(average) '-number bins in a ' num2str(epochNum) ' epoch paradigm'])
  

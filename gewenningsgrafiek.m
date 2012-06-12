@@ -8,9 +8,9 @@ load('C:\pathsave\pathsave.mat')
 % PATH_RESULTS \ FullName \ fig (for figures)
 % PATH_RESULTS \ FullName \ PNG (for PNG images)
 
-TrigNr = 101;
+TrigNr = 110;
 Meting = 'BL4R';
-MetingDag = 3;
+MetingDag = 2;
 
 ERP_FZ_Ylim   = [-10 10];
 ERP_M1M2_Ylim = [-15 20];
@@ -63,27 +63,15 @@ ERP_timeStop  = 1000;
     EEG = eeg_checkset( EEG );
 
     
-%% Obtain the Electrode numbers
-    FZ = electrodeLookup( 'Fz' );
-    M1 = electrodeLookup( 'M1' );
-    M2 = electrodeLookup( 'M2' );
-
-    plots = { 'Cz', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'CP1', 'CP2', 'CP3', 'CP4', 'CP5', 'CP6' };
-    Enr = zeros( length( plots ), 1 );
-
-    for i = 1:length( plots )
-        Enr( i ) = electrodeLookup( plots( i ) );
-    end
-
 %% Reference to FZ
-    EEG2M1M2 = pop_reref( EEG, [M1 M2] );
+    EEG2M1M2 = pop_reref( EEG, [electrodeLookup('M1'),electrodeLookup('M2')] );
     EEG2M1M2.setname = [ patientName ' M1M2'];
     EEG2M1M2 = eeg_checkset( EEG2M1M2 );
     
     
  %% Generate EPs per trigger
  
- [A,min,max]=wenGraph(EEG2M1M2,20,electrodeLookup('C3'));
+ [A,min,max]=wenGraph(EEG2M1M2,10,electrodeLookup('C3'));
  
  
 %% Stop the timer!

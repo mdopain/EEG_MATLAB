@@ -28,7 +28,7 @@ hold on
  
  averageEpoch=zeros(length(eeg.data(electrode,:,1)));
  
- graphData=zeros(round(epochNum/average),2);
+ graphData=zeros(floor(epochNum/average),2);
  
  timeBeforePulse=200;
  
@@ -86,11 +86,16 @@ hold on
      
  end
 
- 
+
  figure;
  plot(1:epochNum,amplitudes,'b');
  title(['min-max differences per event in a ' num2str(epochNum) ' epoch paradigm'])
  figure;
+ title(['min-max differences averaged in ' num2str(average) '-number bins in a ' num2str(epochNum) ' epoch paradigm','FontSize',25])
+ subplot(1,2,1)
+ bar(graphData(:,1).',graphData(:,2).');
+ subplot(1,2,2)
  plot(graphData(:,1),graphData(:,2));
- title(['min-max differences averaged in ' num2str(average) '-number bins in a ' num2str(epochNum) ' epoch paradigm'])
+ylim([0 350])
+ 
  
