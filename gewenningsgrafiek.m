@@ -21,7 +21,7 @@ ERP_timeStop  = 1000;
     cd( PATH_WRKDIR );
 
 % Add the paths to the work directory
-    addpath( genpath(PATH_SCRIPTS), genpath(PATH_DATA), PATH_RESULTS );
+    addpath( genpath(PATH_SCRIPTS), genpath(PATH_DATA), PATH_RESULTS, PATH_EEGLAB);
 
 % Start the Tic Timer.
     tic;
