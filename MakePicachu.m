@@ -3,27 +3,15 @@ close all
 clc
 
 % Declaring path variables. End the string with a "\"
-global PATH_WRKDIR PATH_SCRIPTS PATH_DATA PATH_RESULTS PATH_EPOCH
+global PATH_WRKDIR PATH_SCRIPTS PATH_DATA PATH_RESULTS
 PATH_WRKDIR     = 'C:\Users\Jeffrey Benistant\Desktop\Mathlab\';
 PATH_SCRIPTS    = [ PATH_WRKDIR 'Analyse2\' ];
-PATH_DATA       = [ PATH_WRKDIR 'Data\Raw\' ];
-PATH_EPOCH      = [ PATH_WRKDIR 'Data\Epochs\' ];
+PATH_DATA       = [ PATH_WRKDIR 'Data\data\' ];
 PATH_RESULTS    = [ PATH_WRKDIR 'Results\' ];
 
 % Folders:
 % PATH_RESULTS \ FullName \ fig (for figures)
 % PATH_RESULTS \ FullName \ PNG (for PNG images)
-
-%%
-% To do:
-% Meerdere files inladen. (1x, 2x, 4x, 8x PT aan een hand)
-% Van alle EP's, apparte PNG's maken
-% Meerdere PT's in een plaatje tonen (eerste 30?)
-% De eerste 30 vs de laatste 30 in een plaatje tonen
-
-%% Vragen:
-% Moet het signaal gesmooth worden, of is het goed zoals het is?
-% Wellciht nog een filter eroverheen???
 
 TrigNr = 102;
 Meting = '4R';
@@ -51,9 +39,10 @@ ERP_timeStop  = 1000;
     saveName = [date '.' meting '.' Name ];
 
     setFile = [ date '.' meting '.' Name '.set' ];
-    fExist = exist( [PATH_EPOCH setFile ], 'file' );
+    setPath = [PATH_RESULTS FullName '\' ];
+    fExist = exist( [setPath setFile ], 'file' );
     if fExist(1) == 0
-        error( [ 'MakePicachu: SET-File does not exist:' PATH_EPOCH setFile ] )
+        error( [ 'MakePicachu: SET-File does not exist:' setPath setFile ] )
     end
 %% Create folders, if they dont yet exist
     if exist( [ PATH_RESULTS FullName ], 'dir') == false
@@ -76,10 +65,21 @@ ERP_timeStop  = 1000;
     [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
 
 % Read the dataset
-    EEG = pop_loadset( 'filename', setFile, 'filepath', PATH_EPOCH );
+    EEG = pop_loadset( 'filename', setFile, 'filepath', setPath );
     EEG = eeg_checkset( EEG );
 
-    
+%% Make Pica!
+%{
+    figure
+    for i = 1:length( EEG.times )
+        pica( i ) = sum( EEG.data(14,i,:) );
+    end
+    plot( EEG.times, pica ./ EEG.trials );
+    title('All Epoches')
+    xlabel('Time')
+    ylabel('Intensity')
+    hold on
+%}
 %% Obtain the Electrode numbers
     FZ = electrodeLookup( 'Fz' );
     M1 = electrodeLookup( 'M1' );
@@ -96,8 +96,7 @@ ERP_timeStop  = 1000;
     EEG2FZ = pop_reref( EEG, [FZ] );
     EEG2FZ.setname = [ patientName ' Fz'];
     EEG2FZ = eeg_checkset( EEG2FZ );
-%%
-%{
+
 % Make picachu!
     for i = 1:length( plots )
         figure;
@@ -107,23 +106,10 @@ ERP_timeStop  = 1000;
         saveas(gca, [ PATH_RESULTS FullName '\PNG\FZ_' saveName '_' char( plots( i ) ) '.png' ] );
         close;
     end
-%}
-%%
-    figure
-    for i = 1:length( EEG2FZ.times )
-        pica( i ) = sum( EEG2FZ.data( Enr( 5 ), i, 1:30 ) );
-    end
-    plot( EEG2FZ.times, pica ./ EEG2FZ.trials );
-    title( gca, 'Average Epoches' )
-    xlabel( gca, 'Time' )
-    ylabel( gca,'Intensity' )
-    hold on
-%    saveas( h, [ PATH_RESULTS FullName '\PNG\FZ_' saveName '_' char( plots( i ) ) '.png' ] );
 
     clear EEG2FZ;
 
 %% Reference to M1M2
-%{
     EEG2M1M2 = pop_reref( EEG, [ M1 M2] );
     EEG2M1M2.setname = [ patientName ' M1-M2'];
     EEG2M1M2 = eeg_checkset( EEG2M1M2 );
@@ -140,6 +126,5 @@ ERP_timeStop  = 1000;
     end
 
     clear EEG2M1M2;
-%}
 %% Stop the timer!
     toc
