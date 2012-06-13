@@ -137,24 +137,35 @@ end
 rightHands = handOverlay(sensMapsRight);
 leftHands = handOverlay(sensMapsLeft);
 gemiddeldealles = 0.479196429;
-    for x=1:398
+
+alphaRight = zeros(480,398);
+alphaLeft = alphaRight;
+
+for x=1:398
         for y=1:480
             if ~isnan(rightHands(y,x))
+                alphaRight(y,x)=1;
                 rightHands(y,x) = rightHands(y,x) .* gemiddeldealles;
+                % Is de regel hierboven wel nodig, aangezien imagesc
+                % schaalt naar de data?
             end
             if ~isnan(leftHands(y,x))
+                alphaLeft(y,x)=1;
                 leftHands(y,x) = leftHands(y,x) .* gemiddeldealles;
             end            
         end
-    end
+end
 
-figure; imshow(norm);
+B = imagesc(leftHands);
+set(B,'AlphaData',alphaLeft);
+imwrite(B,'leftHands.png');
+
+imageLeft = imread('leftHands.png');
+figure;
+imshow(norm)
 hold on
-imwrite(imagesc(leftHands),'gebied.tif');
-D = imread('gebied.tif');5
-% imshow(D, 'AlphaData', 0.5);
-imshow(D);
-hold off
+D = imshow(imageLeft)
+set(imageLeft,'AlphaData',alphaLeft)
 
 
 toc
