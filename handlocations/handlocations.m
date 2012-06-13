@@ -15,6 +15,7 @@ eval_images = {daniel_r,daniel_l,paul_r,paul_l};
 
 imageNum = length(eval_images);
 %% Now evaluate points
+%{
 pts = zeros(14,2,imageNum);
 
 for i=1:imageNum;
@@ -27,7 +28,7 @@ imshow(eval_images{i});
 end
 
 save('savedPts.mat','pts');
-
+%}
 %% Import data from excel sheet and load points
 
 % This is the baseline measurement of the first of June, with Daniël en

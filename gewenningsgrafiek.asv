@@ -12,6 +12,9 @@ TrigNr = 110;
 Meting = 'BL4R';
 MetingDag = 2;
 
+granularity = 5;
+
+
 ERP_FZ_Ylim   = [-10 10];
 ERP_M1M2_Ylim = [-15 20];
 ERP_timeStop  = 1000;
@@ -70,14 +73,9 @@ ERP_timeStop  = 1000;
     
     
  %% Generate EPs per trigger
- % Following variable contains the resolution of the epoch averaging; this
- % can be a number or a vector. 
- epochRes = 5:8;
- 
- adaptData=zeros(1,1,length(epochRes));
- for i=1:length(epochRes);
- [A,min,max]=wenGraph(EEG2M1M2,epochRes(i),electrodeLookup('C3'));
- adaptData(:,:,i)=A;
+ for i=5:10;
+ [A,min,max]=wenGraph(EEG2M1M2,i,electrodeLookup('C3'));
+ adaptData(:,:,i-4)=A;
  end
  
  
