@@ -8,9 +8,9 @@ load('C:\pathsave\pathsave.mat')
 % PATH_RESULTS \ FullName \ fig (for figures)
 % PATH_RESULTS \ FullName \ PNG (for PNG images)
 
-TrigNr = 110;
+TrigNr = 102;
 Meting = 'BL4R';
-MetingDag = 2;
+MetingDag = 3;
 
 ERP_FZ_Ylim   = [-10 10];
 ERP_M1M2_Ylim = [-15 20];
@@ -72,12 +72,11 @@ ERP_timeStop  = 1000;
  %% Generate EPs per trigger
  % Following variable contains the resolution of the epoch averaging; this
  % can be a number or a vector. 
- epochRes = 5:8;
+ epochRes = 4;
  
  adaptData=zeros(1,1,length(epochRes));
  for i=1:length(epochRes);
  [A,min,max]=wenGraph(EEG2M1M2,epochRes(i),electrodeLookup('C3'));
- adaptData(:,:,i)=A;
  end
  
  

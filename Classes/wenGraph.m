@@ -30,7 +30,7 @@ hold on
  % Following settings are the windows wherein to look for minimum and
  % maximum values of the ERPs.
  windowNegative=[100+t0 300+t0];
- windowPositive=[300+t0 500+t0];
+ windowPositive=[200+t0 500+t0];
  
  epochNum=length(eeg.data(electrode,1,:));
  

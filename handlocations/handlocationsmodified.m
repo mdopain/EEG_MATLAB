@@ -156,15 +156,22 @@ for x=1:398
         end
 end
 
-B = imagesc(leftHands);
-set(B,'AlphaData',alphaLeft);
-imwrite(B,'leftHands.png');
+%%
+tic
+figure;
+B = ind2rgb(leftHands,jet(256));
 
+imagesc(B);
+% set(B,'AlphaData',alphaLeft);
+% saveas(gca,'testBlaat.png')
+toc
+
+%%
 imageLeft = imread('leftHands.png');
 figure;
 imshow(norm)
 hold on
-D = imshow(imageLeft)
+D = imshow(imageLeft);
 set(imageLeft,'AlphaData',alphaLeft)
 
 
