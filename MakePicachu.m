@@ -3,128 +3,217 @@ close all
 clc
 
 % Declaring path variables. End the string with a "\"
-global PATH_WRKDIR PATH_SCRIPTS PATH_DATA PATH_RESULTS
+global PATH_WRKDIR PATH_EEGLAB PATH_DATA PATH_RESULTS PATH_EPOCH
 PATH_WRKDIR     = 'C:\Users\Jeffrey Benistant\Desktop\Mathlab\';
-PATH_SCRIPTS    = [ PATH_WRKDIR 'Analyse2\' ];
-PATH_DATA       = [ PATH_WRKDIR 'Data\data\' ];
-PATH_RESULTS    = [ PATH_WRKDIR 'Results\' ];
+PATH_EEGLAB     = [ PATH_WRKDIR 'eeglab10_2_5_8b\' ];
+PATH_DATA       = [ PATH_WRKDIR 'Data\Raw\' ];
+PATH_EPOCH      = [ PATH_WRKDIR 'Data\Epochs\' ];
+PATH_RESULTS    = [ PATH_WRKDIR 'Results\Output\' ];
 
 % Folders:
-% PATH_RESULTS \ FullName \ fig (for figures)
+% PATH_RESULTS \ FullName \ FIG (for figures)
 % PATH_RESULTS \ FullName \ PNG (for PNG images)
 
-TrigNr = 102;
-Meting = '4R';
-MetingDag = 1;
+    EPs         = { '01.06.OO4R.Daniel', '01.06.BL4R.Daniel' };
+    FileName    = 'Filename';
+    IMGTitle    = 'Ogen open compare Daniel';
 
-ERP_FZ_Ylim   = [-10 10];
-ERP_M1M2_Ylim = [-15 20];
-ERP_timeStop  = 1000;
+    EpochStart = 1;  % Fill in 0, to start at the beginning
+    EpochStop  = 50; % t/m % Fill in 0 to go till the end.
+
+    MakeERP = 0;
+    MakePlot = 1;
+% Electrodes to plot
+    plotsR = { 'CP3' };
+    plotsL = { 'CP4' };
+
+% Output formats (see the saveas function)
+    output = { 'png' };
+
+% Rereference to
+    Reference = { 'FZ' };
+
+% Advanced config...
+    ERP_Ylim        = [-10 10];
+    ERP_timeStop    = 1000;
 
 %%
-% Set the path to the Workdirectory.
-    cd( PATH_WRKDIR );
-
-% Add the path's to the work directory
-    addpath( PATH_SCRIPTS, PATH_DATA, PATH_RESULTS );
-
 % Start the Tic Timer.
     tic;
 
+% Set the path to the Workdirectory.
+    cd( PATH_WRKDIR );
+
+% Define a variable for the legend
+    PLOTlegend = {};
+
+% Colours
+    EPsColour   = { 'b-', 'r-', 'g-', 'y-', 'o-', 'p-' };
+    EPsColourNr = 1;
+
+%% Preform Checks
+    if length( EPs ) == 0
+        error( 'EPs: dude... WAKER UP! You gotta select the EPs yourself, me not gonna do that 4 you!' )
+    end
+        
+    if MakeERP == 0 && MakePlot == 0
+        error( '... You stupid. No pica made this way! (MakePlot = 0; MakeERP = 0)' );
+    end
+    
+    if length( plotsR ) == 0
+        error( 'Serials? plotsR is empty' );
+    end
+    
+    if length( plotsL ) == 0
+        error( 'Serials? plotsL is empty' );
+    end
+    
 %% Get file info
-    [ trigfile, cntfile, FullName, Name, date, trigNr, meting ] = getFileInfo( TrigNr, Meting, MetingDag, PATH_DATA );
-
-% Make a lovely name to display as title
-    patientName = [date '.' meting '.' FullName ];
-    saveName = [date '.' meting '.' Name ];
-
-    setFile = [ date '.' meting '.' Name '.set' ];
-    setPath = [PATH_RESULTS FullName '\' ];
-    fExist = exist( [setPath setFile ], 'file' );
-    if fExist(1) == 0
-        error( [ 'MakePicachu: SET-File does not exist:' setPath setFile ] )
+    for i = 1:length( EPs )
+        fExist = exist( [PATH_EPOCH char( EPs( i ) ) '.set' ], 'file' );
+        if fExist(1) == 0
+            error( [ 'MakePicachu: SET-File does not exist:' PATH_EPOCH char( EPs( i ) ) '.set' ] )
+        end
     end
+
 %% Create folders, if they dont yet exist
-    if exist( [ PATH_RESULTS FullName ], 'dir') == false
-        disp( [ 'De map ' PATH_RESULTS FullName ' is aangemaakt.'] )
-        mkdir( [ PATH_RESULTS FullName ] );
+
+% In the Results folder, create a directory with the name of the patient
+    if exist( [ PATH_RESULTS ], 'dir') == false
+        mkdir( [ PATH_RESULTS ] );
+        disp( [ 'De map ' PATH_RESULTS ' is aangemaakt.'] )
     end
 
-    if exist( [ PATH_RESULTS FullName '\FIG\' ], 'dir') == false
-        disp( [ 'De map ' PATH_RESULTS FullName '\FIG\' ' is aangemaakt.'] )
-        mkdir( [ PATH_RESULTS FullName '\FIG\'] );
+% Create a subfolder in the Results directory, with the name of the format!
+% (in capital)
+    for i = 1:length( output )
+        if exist( [ PATH_RESULTS char( upper( output( i ) ) ) '\' ], 'dir') == false
+            mkdir( [ PATH_RESULTS char( upper( output( i ) ) ) '\'] );
+            disp( [ 'De map ' PATH_RESULTS char( upper( output( i ) ) ) '\' ' is aangemaakt.'] )
+        end
     end
 
-    if exist( [ PATH_RESULTS FullName '\PNG\' ], 'dir') == false
-        disp( [ 'De map ' PATH_RESULTS FullName '\PNG\' ' is aangemaakt.'] )
-        mkdir( [ PATH_RESULTS FullName '\PNG\'] );
+%% Obtain the Electrode numbers
+    for i = 1:length( Reference )
+        ReferenceNrs( i ) = electrodeLookup( Reference( i ) );
     end
 
 %% Read EEG data
 % Start EEGLab
-    [ALLEEG EEG CURRENTSET ALLCOM] = eeglab;
+    [ ALLEEG STARTEEG CURRENTSET ALLCOM ] = eeglab;
 
-% Read the dataset
-    EEG = pop_loadset( 'filename', setFile, 'filepath', setPath );
-    EEG = eeg_checkset( EEG );
+% For each SET file, loop through
+    for FileNr = 1:length( EPs )
+%%
+    % Fill a matrix with zero's
+        clear Enr plots;
 
-%% Make Pica!
-%{
-    figure
-    for i = 1:length( EEG.times )
-        pica( i ) = sum( EEG.data(14,i,:) );
-    end
-    plot( EEG.times, pica ./ EEG.trials );
-    title('All Epoches')
-    xlabel('Time')
-    ylabel('Intensity')
-    hold on
+    % Figure out wheter the Left or the Right hand data is loading...
+        tmp = strfind( char( EPs( FileNr ) ), 'R.' );
+        if length( tmp ) > 0
+            plots = plotsR;
+        else
+            tmp = strfind( char( EPs( FileNr ) ), 'L.' );
+            if length( tmp ) > 0
+                plots = plotsL;
+            else
+                error( 'Sjit! I cannot figure out whether this is the Left or the Right hand!' );
+            end
+        end
+
+    % Fill the matrix with the "plots" corresponding electrode numbers.
+        Enr = zeros( length( plots ), 1 );
+        for i = 1:length( plots )
+            Enr( i ) = electrodeLookup( plots( i ) );
+        end
+
+%% Load the EEG data!
+    % Loading electrode location
+        EEG = pop_chanedit( STARTEEG, 'load',{ [PATH_EEGLAB 'elpos64_goed.loc' ] 'filetype' 'autodetect'} );
+        EEG = eeg_checkset( EEG );
+
+    % Read the dataset
+        EEG = pop_loadset( 'filename', [ char( EPs( FileNr ) ) '.set' ], 'filepath', PATH_EPOCH );
+        EEG = eeg_checkset( EEG );
+
+    % Reference to FZ
+        EEG = pop_reref( EEG, ReferenceNrs );
+        EEG.setname = [ EPs( FileNr ) ' Fz' ];
+        EEG = eeg_checkset( EEG );
+
+        tmpRefNRs = '';
+        for i=1:length( Reference )
+            tmpRefNRs = [ tmpRefNRs Reference( i ) ];
+        end
+
+%% Make picachu!
+        if MakeERP == 1
+            for i = 1:length( plots )
+                figure;
+                pop_erpimage( EEG, 1, Enr( i ), [], [], 10, 1, {}, [], '', 'yerplabel', '\muV', 'erp', 'on', 'limits', [-200 ERP_timeStop ERP_Ylim NaN NaN NaN NaN] ,'cbar','on','caxis',[-30 30] ,'spec',[1 35] ,'topo', { Enr( i ) EEG.chanlocs EEG.chaninfo } );
+                title(gca, [ char( EPs( FileNr ) ) ' ' char( plots( i ) ) ' FZ' ] )
+                for z = 1:length( output )
+                    saveas(gca, [ PATH_RESULTS char( upper( output( z ) ) ) '\EPR_' char( tmpRefNRs ) '_' char( EPs( FileNr ) ) '_' char( plots( i ) ) '.' char( output( z ) ) ] );
+                end
+                close;
+            end
+        end
 %}
-%% Obtain the Electrode numbers
-    FZ = electrodeLookup( 'Fz' );
-    M1 = electrodeLookup( 'M1' );
-    M2 = electrodeLookup( 'M2' );
+%% Determine what epoches to use...
+        clear EStop EStart;
 
-    plots = { 'Cz', 'C1', 'C2', 'C3', 'C4', 'C5', 'C6', 'CP1', 'CP2', 'CP3', 'CP4', 'CP5', 'CP6' };
-    Enr = zeros( length( plots ), 1 );
+        if( EpochStop < EpochStart )
+            error( 'EpochStop is bigger than EpochStart. You are weird!' );
+        end
 
-    for i = 1:length( plots )
-        Enr( i ) = electrodeLookup( plots( i ) );
+        if EpochStop == 0
+            EStop = EEG.trials;
+        else
+            EStop = EpochStop;
+        end
+
+        if EpochStart == 0
+            EStart = 1;
+        else
+            EStart = EpochStart;
+        end
+
+%% Make the plot
+        if MakePlot == 1
+            for ii = 1:length( Enr )
+                for iii = 1:length( EEG.times )
+                    pica( iii ) = sum( EEG.data( Enr( ii ), iii, EStart:EStop ) );
+                end
+                plot( EEG.times, pica ./ ( ( EStop - EStart ) + 1), char( EPsColour( EPsColourNr ) ) );
+                EPsColourNr = (EPsColourNr + 1);
+                ylim( [-10 10] );
+                PLOTlegend = cat(1, PLOTlegend, [ char( EPs( FileNr ) ) ' ' char( plots( ii ) ) ] );
+                hold on
+            end
+        end
+
+        clear EEG;
     end
+    title( IMGTitle );
+    xlabel( 'Time' );
+    ylabel( 'Intensity' );
 
-%% Reference to FZ
-    EEG2FZ = pop_reref( EEG, [FZ] );
-    EEG2FZ.setname = [ patientName ' Fz'];
-    EEG2FZ = eeg_checkset( EEG2FZ );
+% Save and show the image
+    legend( PLOTlegend );
+    for z = 1:length( output )
+        PlotName = [ PATH_RESULTS char( upper( output( z ) ) ) '\PLOT_' FileName '.' char( output( z ) ) ];
 
-% Make picachu!
-    for i = 1:length( plots )
-        figure;
-        pop_erpimage( EEG2FZ, 1, Enr( i ), [], [], 10, 1, {}, [], '', 'yerplabel', '\muV', 'erp', 'on', 'limits', [-200 ERP_timeStop ERP_FZ_Ylim NaN NaN NaN NaN] ,'cbar','on','caxis',[-30 30] ,'spec',[1 35] ,'topo', { Enr( i ) EEG2FZ.chanlocs EEG2FZ.chaninfo } );
-        title(gca, [ patientName ' ' char( plots( i ) ) ' FZ' ] )
-        saveas(gca, [ PATH_RESULTS FullName '\FIG\FZ_' saveName '_' char( plots( i ) ) '.fig' ] );
-        saveas(gca, [ PATH_RESULTS FullName '\PNG\FZ_' saveName '_' char( plots( i ) ) '.png' ] );
-        close;
+    % Dont automaticaly overwrite the file!
+        fExist = exist( PlotName, 'file' );
+        if fExist(1) == 0
+            saveas(gca, PlotName );
+        else
+            if questdlg( 'De file bestaat al: Overschrijven?', 'Save the cows!', 'Graag', 'ik ben Belg', 'Graag' )
+                saveas(gca, PlotName );
+            end
+        end
     end
+    close all;
 
-    clear EEG2FZ;
-
-%% Reference to M1M2
-    EEG2M1M2 = pop_reref( EEG, [ M1 M2] );
-    EEG2M1M2.setname = [ patientName ' M1-M2'];
-    EEG2M1M2 = eeg_checkset( EEG2M1M2 );
-
-% Make picachu!
-    for i = 1:length( plots )
-        figure;
-        Enr( i )
-        pop_erpimage( EEG2M1M2, 1, Enr( i ), [], [], 10, 1, {}, [], '', 'yerplabel', '\muV', 'erp', 'on', 'limits', [-200 ERP_timeStop ERP_M1M2_Ylim NaN NaN NaN NaN], 'cbar', 'on', 'caxis', [-30 30], 'spec', [1 35], 'topo', { Enr( i ) EEG2M1M2.chanlocs EEG2M1M2.chaninfo } );
-        title( gca, [ patientName ' ' char( plots( i ) ) ' M1M2' ] )
-        saveas(gca, [ PATH_RESULTS FullName '\FIG\M1M2_' saveName '_' char( plots( i ) ) '.fig'] );
-        saveas(gca, [ PATH_RESULTS FullName '\PNG\M1M2_' saveName '_' char( plots( i ) ) '.png'] );
-        close;
-    end
-
-    clear EEG2M1M2;
 %% Stop the timer!
     toc
