@@ -12,7 +12,7 @@ function [ trigfile, cntfile, FullName, Name, date, trigNr, meting ] = getFileIn
 %
 % Meting: 1L, 1R, 2L, 2R, 4L, 4R, 8L, 8R
 %
-% Dag: 1 / 2 / 3 / 4
+% Dag: 1 / 2 / 3 / 4 / 5 / 6 / 7 / 8
 %
 % PATH_DATA: Path to the data directory
 
@@ -68,6 +68,12 @@ function [ trigfile, cntfile, FullName, Name, date, trigNr, meting ] = getFileIn
             date = '06.06';
         case 5
             date = '08.06';
+        case 6
+            date = '14.06';
+        case 7
+            date = '15.06';
+        case 8
+            date = '19.06';
     end
 
 % Make a string containing the paths to the files

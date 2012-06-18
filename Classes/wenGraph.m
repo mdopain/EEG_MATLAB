@@ -7,7 +7,6 @@
 % eeg:              EEG data as outputted by EEGLAB
 % average:          desired 'epoch resolution'; number of epochs to average
 %                   per data point.
-%                   
 % electrode:        channel number of electrode to be used.
 % 
 % 
@@ -56,16 +55,16 @@ hold on
      % 'reset' is a boolean which detects if the loop variable i is a
      % multiple of the variable 'average'. 
      reset = mod(i,average)==0;
-         
+
      currentEpoch = eeg.data(electrode,:,i);
-     
+
      % If the specified number of epochs to mediate over (saved in the
      % variable 'average') has not yet been reached, the if statement gets
      % executed. Otherwise, see else. 
      if ~reset
          averageEpoch(n,:)=averageEpoch(n,:)+currentEpoch./average;
      else
-         
+
          % This code saves the minimum and maximum of the 
          % averaged epochs, first windowing them appropriately, hereby
          % hopefully selecting the EP peaks.

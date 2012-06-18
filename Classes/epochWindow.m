@@ -11,7 +11,7 @@
 % 
 % Output is the windowed epoch.
 
-function [windowedEpoch] = epochWindow(epoch,min,max)
+function [windowedEpoch] = epochWindow( epoch, min, max )
 
 windowedEpoch = zeros(length(epoch));
 
